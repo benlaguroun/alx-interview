@@ -1,27 +1,22 @@
 #!/usr/bin/python3
+""" A Python script to compute Pascal's triangle for any input number """
+
+
 def pascal_triangle(n):
-    """
-    Generate Pascal's triangle of n rows
-    """
+    """ A function that returns a list of lists of integers representing Pascal's triangle for a given number n. """
     triangle = []
+
+    # return (trianlgle if n <= 0)
+    if n <= 0:
+        return triangle
     for i in range(n):
-        row = [1]  # First element of each row is always 1
-        if triangle:
-            last_row = triangle[-1]
-            # Calculate each element of the current row based on the previous row
-            for j in range(1, len(last_row)):
-                row.append(last_row[j - 1] + last_row[j])
-            row.append(1)  # Last element of each row is always 1
-        triangle.append(row)
+        temp_list = []
+
+        for j in range(i+1):
+            if j == 0 or j == i:
+                temp_list.append(1)
+            else:
+                temp_list.append(triangle[i-1][j-1] + triangle[i-1][j])
+        triangle.append(temp_list)
+    # print(triangle)
     return triangle
-
-def print_triangle(triangle):
-    """
-    Print the triangle
-    """
-    for row in triangle:
-        print("[{}]".format(",".join([str(x) for x in row])))
-
-# Test the function with an example
-print_triangle(pascal_triangle(5))
-
