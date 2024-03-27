@@ -1,42 +1,43 @@
+
 #!/usr/bin/python3
+
+""" A script designed to read input from the standard input line by line and calculate various metrics based on the data provided. """
+
 import sys
-import signal
 
-def print_stats(file_size, status_codes):
-    """Print statistics"""
-    print("File size: {}".format(file_size))
-    for status_code in sorted(status_codes.keys()):
-        if status_codes[status_code] != 0:
-            print("{}: {}".format(status_code, status_codes[status_code]))
 
-def signal_handler(sig, frame):
-    """Signal handler"""
-    print_stats(total_size, status_codes)
+def printsts(dic, size):
+    """ A script that prints information. """
+    print("File size: {:d}".format(size))
+    for i in sorted(dic.keys()):
+        if dic[i] != 0:
+            print("{}: {:d}".format(i, dic[i]))
 
-status_codes = {
-    '200': 0,
-    '301': 0,
-    '400': 0,
-    '401': 0,
-    '403': 0,
-    '404': 0,
-    '405': 0,
-    '500': 0
-}
-total_size = 0
-line_count = 0
+sts = {"200": 0, "301": 0, "400": 0, "401": 0, "403": 0,
+       "404": 0, "405": 0, "500": 0}
+count = 0
+size = 0
 
-signal.signal(signal.SIGINT, signal_handler)
+try:
+    for line in sys.stdin:
+        if count != 0 and count % 10 == 0:
+            printsts(sts, size)
 
-for line in sys.stdin:
-    parts = line.split()
-    if len(parts) > 2:
-        status_code = parts[-2]
-        file_size = parts[-1]
-        if status_code in status_codes:
-            status_codes[status_code] += 1
-        total_size += int(file_size)
-        line_count += 1
-        if line_count % 10 == 0:
-            print_stats(total_size, status_codes)
+        stlist = line.split()
+        count += 1
+
+        try:
+            size += int(stlist[-1])
+        except:
+            pass
+
+        try:
+            if stlist[-2] in sts:
+                sts[stlist[-2]] += 1
+        except:
+            pass
+    printsts(sts, size)
+except KeyboardInterrupt:
+    printsts(sts, size)
+    raise
 
