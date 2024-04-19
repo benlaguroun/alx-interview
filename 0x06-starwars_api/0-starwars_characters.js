@@ -2,34 +2,54 @@
 
 const request = require('request');
 
-// Get the Movie ID from command-line arguments
 const movieId = process.argv[2];
+const filmEndPoint = 'https://swapi-api.hbtn.io/api/films/' + movieId;
+let people = [];
+const names = [];
 
-// Construct the URL for fetching characters from the Star Wars API
-const url = `https://swapi.dev/api/films/${movieId}/`;
+const requestCharacters = () => {
+  return new Promise((resolve, reject) => {
+    request(filmEndPoint, (err, res, body) => {
+      if (err || res.statusCode !== 200) {
+        reject('Error: ' + err + ' | StatusCode: ' + res.statusCode);
+      } else {
+        const jsonBody = JSON.parse(body);
+        people = jsonBody.characters;
+        resolve();
+      }
+    });
+  });
+};
 
-// Make a GET request to the API
-request(url, (error, response, body) => {
-    if (error) {
-        console.error('Error:', error);
-    } else if (response.statusCode !== 200) {
-        console.error('Status:', response.statusCode);
+const requestNames = (url) => {
+  return new Promise((resolve, reject) => {
+    request(url, (err, res, body) => {
+      if (err || res.statusCode !== 200) {
+        reject('Error: ' + err + ' | StatusCode: ' + res.statusCode);
+      } else {
+        const jsonBody = JSON.parse(body);
+        names.push(jsonBody.name);
+        resolve();
+      }
+    });
+  });
+};
+
+const getCharNames = async () => {
+  try {
+    await requestCharacters();
+    if (people.length > 0) {
+      for (const p of people) {
+        await requestNames(p);
+      }
+      console.log(names.join('\n'));
     } else {
-        const filmData = JSON.parse(body);
-        console.log('Characters:');
-        filmData.characters.forEach((characterUrl) => {
-            // Make a GET request for each character URL
-            request(characterUrl, (charError, charResponse, charBody) => {
-                if (charError) {
-                    console.error('Error:', charError);
-                } else if (charResponse.statusCode !== 200) {
-                    console.error('Status:', charResponse.statusCode);
-                } else {
-                    const characterData = JSON.parse(charBody);
-                    console.log(characterData.name);
-                }
-            });
-        });
+      console.error('Error: Got no Characters for some reason');
     }
-});
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+getCharNames();
 
