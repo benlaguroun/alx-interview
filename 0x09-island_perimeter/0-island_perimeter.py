@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 """ Function to find perimeter of an island """
-
 def island_perimeter(grid):
     """
     Input: List of Lists
@@ -24,3 +23,13 @@ def island_perimeter(grid):
 
     return count
 
+# Example usage:
+if __name__ == "__main__":
+    grid = [
+        [0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0],
+        [0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0]
+    ]
+    print(island_perimeter(grid))  # Output: 12
